@@ -9,7 +9,7 @@
 * Copyright(C) 2014 UFactory Team. All right reserved.
 *************************************************************************/
 #include <Servo.h>
-#include <EEPROM.h>uArmCalibration
+#include <EEPROM.h>
 #include <UF_uArm.h>
 
 UF_uArm uarm;           // initialize the uArm library 

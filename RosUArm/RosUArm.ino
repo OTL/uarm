@@ -14,7 +14,6 @@ UF_uArm uarm_robot;
 void jointCallback(const uarm::Joints &command) {
   uarm_robot.setPosition(command.stretch, command.height,
                          command.arm_rot, command.hand_rot);
-  delay(500);
 }
 
 void gripperCallback(const std_msgs::Bool &command) {

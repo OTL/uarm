@@ -1,10 +1,9 @@
 /************************************************************************
 * File Name          : RemoteControl
 * Author             : Evan
-* Updated            : Scott Gray
-* Version            : V0.0.2 SG Version
+* Updated            : Evan
+* Version            : V0.0.1
 * Date               : 21 May, 2014
-* Revision Date      : 22 May, 2014
 * Description        : Mouse Control or Leap Motion Control(Processing)
 * License            : 
 * Copyright(C) 2014 UFactory Team. All right reserved.
@@ -13,21 +12,8 @@
 #include <EEPROM.h>
 #include <UF_uArm.h>
 
-//SG-> Added a slew rate time constant to prevent arm from moving too quickly
-#define SLEW_RATE   10  //time in milliseconds between new arm movements
-
 int  heightTemp  = 0, stretchTemp = 0, rotationTemp = 0, handRotTemp = 0;
-
-//SG-> Added variables to hold the current values of the arm position
-int  heightCurr  = 0, stretchCurr = 0, rotationCurr = 0, handRotCurr = 0;
-
-//SG-> Below is angle variable I will be using soon to control keeping the servos from binding
-int angle = 0;
-
-//SG-> Added a variable to keep time to know when to move arm
-unsigned long currTime;  //limit: 50days
-
-char stateMachine = 0, counter = 0; 
+char stateMachine = 0, counter = 0;
 char dataBuf[9] = {0};
 
 UF_uArm uarm;           // initialize the uArm library 
@@ -35,9 +21,8 @@ UF_uArm uarm;           // initialize the uArm library
 void setup() 
 {
   Serial.begin(9600);   // start serial port at 9600 bps
-  while(!Serial) {;}   // wait for serial port to connect. Needed for Leonardo only
+//  while(!Serial);   // wait for serial port to connect. Needed for Leonardo only
   uarm.init();          // initialize the uArm position
-  currTime = millis();
 }
 
 void loop()
@@ -69,60 +54,17 @@ void loop()
         *((char *)(&heightTemp  )+1)  = dataBuf[4]; 
         *((char *)(&handRotTemp )  )  = dataBuf[7]; 
         *((char *)(&handRotTemp )+1)  = dataBuf[6]; 
+        uarm.setPosition(stretchTemp, heightTemp, rotationTemp, handRotTemp);
         /* pump action, Valve Stop. */
         if(dataBuf[8] & CATCH)   uarm.gripperCatch();
         /* pump stop, Valve action. 
            Note: The air relief valve can not work for a long time, 
            should be less than ten minutes. */
         if(dataBuf[8] & RELEASE) uarm.gripperRelease();
-
-//SG-> Ignore the below :)
-/*     
-        Serial.write(13);
-        angle = uarm.readAngle(SERVO_ROT);
-        Serial.print(angle,DEC);
-        Serial.write(32);
-        angle = uarm.readAngle(SERVO_L);
-        Serial.print(angle,DEC);
-        Serial.write(32);
-        angle = uarm.readAngle(SERVO_R);
-        Serial.print(angle,DEC);
-        Serial.write(32);
-        angle = uarm.readAngle(SERVO_HAND_ROT);
-        Serial.print(angle,DEC);
-        Serial.write(32);
-        angle = uarm.readAngle(SERVO_HAND);
-        Serial.print(angle,DEC);
-        Serial.write(13);
-*/
       }
     }
   }
-
-//SG-> This code checks for enough time to have passed to update the position of the arm
-  if (millis() - currTime > SLEW_RATE)
-  {
-    stretchCurr = stretchCurr < stretchTemp ? ++stretchCurr : stretchCurr;
-    stretchCurr = stretchCurr > stretchTemp ? --stretchCurr : stretchCurr;
-  
-    rotationCurr = rotationCurr < rotationTemp ? ++rotationCurr : rotationCurr;
-    rotationCurr = rotationCurr > rotationTemp ? --rotationCurr : rotationCurr;
-
-    heightCurr = heightCurr < heightTemp ? ++heightCurr : heightCurr;
-    heightCurr = heightCurr > heightTemp ? --heightCurr : heightCurr;
-
-    handRotCurr = handRotCurr < handRotTemp ? ++handRotCurr : handRotCurr;
-    handRotCurr = handRotCurr > handRotTemp ? --handRotCurr : handRotCurr;
-
-    //SG-> Set the new position
-    uarm.setPosition(stretchCurr, heightCurr, rotationCurr, handRotCurr);
-
-    //SG-> Get the latest time for next wait period
-    currTime = millis();
-  }
-
   /* delay release valve, this function must be in the main loop */
   uarm.gripperDetach();  
-
 } 
 

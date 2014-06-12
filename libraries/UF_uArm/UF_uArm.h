@@ -1,12 +1,12 @@
 /******************************************************************************
 * File Name          : UF_uArm.h
 * Author             : Evan
-* Updated            : Scott Gray
-* Version            : V0.0.3 SG Version (BETA)
+* Updated            : Evan
+* Version            : V0.1 (BATE)
 * Created Date       : 2 MAY, 2014
-* Modified Date      : 22 MAY, 2014
-* Description        :
-* License            :
+* Modified Date      : 29 MAY, 2014
+* Description        : 
+* License            : 
 * Copyright(C) 2014 UFactory Team. All right reserved.
 *******************************************************************************/
 
@@ -41,11 +41,12 @@
 #define D009A_SERVO_MIN_PUL     600
 #define D009A_SERVO_MAX_PUL     2550
 #define SAMPLING_DEADZONE       2
-#define INIT_POS_L              30
-#define INIT_POS_R              24
+#define INIT_POS_L              37
+#define INIT_POS_R              25
 #define BTN_TIMEOUT_MS          3000
 #define CATCH					0x01
 #define RELEASE					0x02
+#define CALIBRATION_FLAG		0xEE
 
 /*****************  Port definitions  *****************/
 #define BTN_D4                  4     //
@@ -67,7 +68,7 @@ public:
 	void init();    // initialize the uArm position
     void calibration();  //
     int readAngle(char _servoNum);
-	void setPosition(double _stretch, double _height, int _armRot, int _handRot);    //
+	void setPosition(double _stretch, double _height, int _armRot, int _handRot);    // 
 	void gripperCatch();    //
 	void gripperRelease();  //
 	void gripperDetach();   //
@@ -78,22 +79,19 @@ public:
     void valveOff();        // valve disnable
     void detachServo(char _servoNum);
 	void sendData(byte _dataAdd, int _dataIn); //
+	void alert(int _times, int _runTime, int _stopTime);
 
 private:
 	/*******************  Servo offset  *******************/
 	char offsetL;
 	char offsetR;
-	char offsetSet;        //SG-> Added to know if offset is set
 	/*****************  Define variables  *****************/
 	int heightLst;
 	int height;
-	int stretch;
-	int rotation;
+	int stretch; 
+	int rotation; 
 	int handRot;
-    int minAngle_L;
-    int minAngle_R;
-    boolean adjustFlag;
-	boolean resetflag;
+	boolean gripperRst;
     unsigned long delay_loop;
     unsigned long lstTime;  //limit: 50days
 	/***************  Create servo objects  ***************/

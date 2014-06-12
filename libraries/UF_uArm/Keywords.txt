@@ -19,14 +19,20 @@ setPosition	KEYWORD2
 gripperCatch	KEYWORD2
 gripperRelease	KEYWORD2
 gripperDetach	KEYWORD2
+
 gripperDirectDetach	KEYWORD2
+
 pumpOn		KEYWORD2
+
 pumpOff		KEYWORD2
+
 valveOn		KEYWORD2
+
 valveOff	KEYWORD2
+
 detachServo	KEYWORD2
 sendData	KEYWORD2
-
+alert		KEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################
